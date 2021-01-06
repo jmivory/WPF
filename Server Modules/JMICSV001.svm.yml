@@ -1,0 +1,298 @@
+﻿ServerModule:
+  Name:               JMIContactsDataServer
+  Target Platform:    Windows/IBM i/Linux
+
+  Multilingual Details:
+  - ENG:
+      Description:        "Cust Contacts Data Server"
+
+  Source: |
+    Begin_Com Role(*EXTENDS #PRIM_SRVM) Sessionidentifier('Portalize') Sessionkeymethod(SecureCookie)
+    * Add a reference for Utilities
+    Define_Com Class(#BPFSessionEventServerHandler) Name(#SessionTracker) Scope(*APPLICATION)
+    Define_Com Class(#BPFServerSecurityUtilities) Name(#Secure) Scope(*APPLICATION)
+    Define_Com Class(#BPFServerSideUtilities) Name(#Utils) Scope(*APPLICATION)
+    
+    * Note : The LANSA Web administrator need to be set to recieve HTTP variables and the field below must be define in HTTP Variables as
+    * IP : Any
+    * Port : Set same value as port value in maintain systems
+    * Name : HTTP_TRANSACTION_ID
+    * Default : NOTOKEN
+    * Func Parms : Field - WTRANSID Type - A Length - 10 Dec. 0
+    Define Field(#WTRANSID) Type(*CHAR) Length(10)
+    
+    Define Field(#WRQSTID) Type(*CHAR) Length(256)
+    Define Field(#WRQSTTS) Type(*CHAR) Length(256)
+    Define Field(#WRQSCKE) Type(*CHAR) Length(896)
+    Group_By Name(#ValidRequestGroup) Fields(#WRQSTID #WRQSTTS #WRQSCKE)
+    
+    * Working Fields
+    Define Field(#RetCode) Type(*CHAR) Length(2)
+    Define Field(#AlphaValue) Type(*CHAR) Length(512)
+    Define Field(#BooleanValue) Type(*BOOLEAN)
+    Define Field(#UserSearchValue) Type(*CHAR) Length(256)
+    Define Field(#MoreResults) Type(*BOOLEAN)
+    Define Field(#UserContactID) Reffld(#xContactIdentification)
+    * Define & Set Up Persistant Values
+    
+    * Session Fields
+    Define Field(#sUserAccountIdentifier) Reffld(#BPFUserAccountInternalKey)
+    Define Field(#TrackingID) Reffld(#BPFSessionID)
+    Define Field(#sSessionAuthenicated) Type(*BOOLEAN)
+    Define Field(#sIsoCode) Type(*CHAR) Length(5)
+    
+    Persist Fields(#sUserAccountIdentifier #TrackingID #sSessionAuthenicated #sIsoCode)
+    
+    Def_List Name(#xContactsList) Fields(#xContactIdentification #xContactTitle #xContactLastName #xContactFirstName #xContactGender #xContactEmailAddress #xContactMobilePhone #xContactHomePhone #xContactFaxNumber #xContactBusinessPhone #xContactNotes #xContactPhoto #xContactInterests #xContactBirthdate #xContactHometown #xContactCity #xContactJobTitle #xContactCompany #xContactAddress #xContactCompanySite #xContactFullName #xContactFullAddress) Counter(#ListCount) Type(*WORKING) Entrys(*MAX)
+    
+    Group_By Name(#xContacts) Fields(#xContactIdentification #xContactTitle #xContactLastName #xContactFirstName #xContactGender #xContactEmailAddress #xContactMobilePhone #xContactHomePhone #xContactFaxNumber #xContactBusinessPhone #xContactNotes #xContactPhoto #xContactInterests #xContactBirthdate #xContactHometown #xContactCity #xContactJobTitle #xContactCompany #xContactAddress #xContactCompanySite)
+    
+    Srvroutine Name(Find) Session(*REQUIRED)
+    Field_Map For(*INPUT) Field(#xContactIdentification)
+    Group_Map For(*OUTPUT) Group(#xContacts)
+    Field_Map For(*OUTPUT) Field(#io£sts) Parameter_Name(Status)
+    
+    * Return all data for the keys provided
+    Fetch Fields(#xContacts) From_File(xContacts) With_Key(#xContactIdentification)
+    
+    Endroutine
+    
+    Srvroutine Name(FindPage) Session(*REQUIRED)
+    Field_Map For(*INPUT) Field(#StartKey1)
+    Field_Map For(*INPUT) Field(#ListPage)
+    List_Map For(*OUTPUT) List(#xContactsList)
+    
+    Define Field(#StartKey1) Reffld(#xContactIdentification)
+    
+    * Get all records from the file starting from the specified key values
+    Select Fields(#xContactsList) From_File(xContacts) With_Key(#StartKey1) Options(*STARTKEY)
+    
+    * Ignore the first record if it matches the startkey(s)
+    Continue If(((#StartKey1 = #xContactIdentification)))
+    
+    Add_Entry To_List(#xContactsList)
+    
+    Leave If(#listcount = #listpage)
+    
+    Endselect
+    
+    Endroutine
+    
+    Srvroutine Name(GetContactsByName) Session(*required)
+    * input
+    Field_Map For(*INPUT) Field(#UserSearchValue) Parameter_Name(UserName)
+    
+    * output
+    List_Map For(*OUTPUT) List(#xContactsList) Parameter_Name(UserData)
+    Field_Map For(*OUTPUT) Field(#MoreResults) Parameter_Name(MoreResults)
+    
+    * Return Status
+    Field_Map For(*OUTPUT) Field(#BPFStatus) Parameter_Name(Status)
+    
+    * assume error
+    #BPFStatus := "ER"
+    
+    If (#UserSearchValue.IsNull)
+    
+    Select Fields(#xContactsList) From_File(xContactsByName)
+    
+    If (#listcount = 250)
+    #MoreResults := True
+    Leave
+    Endif
+    
+    Add_Entry To_List(#xContactsList)
+    
+    Endselect
+    
+    Else
+    Select Fields(#xContactsList) From_File(xContactsByName) Where((#xContactEmailAddress.LowerCase.Contains( #UserSearchValue.LowerCase )) *OrIf (#xContactLastName.LowerCase.Contains( #UserSearchValue.LowerCase )) *OrIf (#xContactFirstName.LowerCase.Contains( #UserSearchValue.LowerCase )))
+    
+    If (#listcount = 250)
+    #MoreResults := True
+    Leave
+    Endif
+    
+    Add_Entry To_List(#xContactsList)
+    
+    Endselect
+    
+    Endif
+    
+    #BPFStatus := "OK"
+    
+    Endroutine
+    
+    Srvroutine Name(GetContactByID) Session(*required)
+    * Input
+    Field_Map For(*INPUT) Field(#UserContactID) Parameter_Name(UserValue)
+    * output
+    List_Map For(*OUTPUT) List(#xContactsList) Parameter_Name(CustContacts)
+    * Return Status
+    Field_Map For(*OUTPUT) Field(#BPFStatus) Parameter_Name(Status)
+    
+    * Check for duplicated request
+    #Secure.CheckIsValidRequest( 'GetContactByID' #WRQSCKE #WRQSTID #WRQSTTS #sSessionAuthenicated )
+    
+    * Assume Failure
+    #BPFStatus := "ER"
+    
+    * Look for user in active accounts
+    Fetch Fields(#xContactsList) From_File(xContacts) With_Key(#UserContactID)
+    
+    If_Status Is_Not(*NORECORD)
+    
+    * Set Data to Return
+    Add_Entry To_List(#xContactsList)
+    
+    * Set Return status
+    #BPFStatus := "OK"
+    
+    Endif
+    
+    Endroutine
+    
+    Srvroutine Name(FindAll) Session(*REQUIRED)
+    List_Map For(*OUTPUT) List(#xContactsList)
+    
+    Select Fields(#xContactsList) From_File(xContacts)
+    
+    Add_Entry To_List(#xContactsList)
+    
+    Endselect
+    
+    Endroutine
+    
+    Srvroutine Name(Findxcontactv1) Session(*REQUIRED)
+    Field_Map For(*INPUT) Field(#xContactLastName)
+    Field_Map For(*INPUT) Field(#xContactFirstName)
+    List_Map For(*OUTPUT) List(#xContactsList)
+    
+    * Get all records from the file using some or all of the key
+    Select Fields(#xContactsList) From_File(xContactsByName) With_Key(#xContactLastName #xContactFirstName) Nbr_Keys(*COMPUTE) Generic(*YES)
+    
+    Add_Entry To_List(#xContactsList)
+    
+    Endselect
+    
+    Endroutine
+    
+    
+    Srvroutine Name(Insert) Session(*REQUIRED)
+    Group_Map For(*INPUT) Group(#xContacts)
+    Field_Map For(*OUTPUT) Field(#io£sts) Parameter_Name(Status)
+    
+    Insert Fields(#xContacts) To_File(xContacts)
+    
+    Endroutine
+    
+    Srvroutine Name(Update) Session(*REQUIRED)
+    Group_Map For(*INPUT) Group(#xContacts)
+    Field_Map For(*OUTPUT) Field(#io£sts) Parameter_Name(Status)
+    
+    Update Fields(#xContacts) In_File(xContacts) With_Key(#xContactIdentification)
+    
+    Endroutine
+    
+    Srvroutine Name(Save) Session(*REQUIRED)
+    List_Map For(*INPUT) List(#xContactsList) Parameter_Name(ProfileData)
+    Field_Map For(*OUTPUT) Field(#io£sts) Parameter_Name(Status)
+    
+    * Look for an existing record
+    Check_For In_File(xContacts) With_Key(#xContactIdentification)
+    
+    
+    * Update the record if found, otherwise create a new one
+    If_Status Is(*EQUALKEY)
+    
+    Update Fields(#xContactsList) In_File(xContacts) With_Key(#xContactIdentification)
+    
+    Else
+    
+    Insert Fields(#xContactsList) To_File(xContacts)
+    
+    Endif
+    
+    Endroutine
+    
+    Srvroutine Name(Delete) Session(*REQUIRED)
+    Field_Map For(*INPUT) Field(#xContactIdentification)
+    Field_Map For(*OUTPUT) Field(#io£sts) Parameter_Name(Status)
+    
+    * Delete a record using the key value
+    Delete From_File(xContacts) With_Key(#xContactIdentification)
+    
+    Endroutine
+    
+    * Set Contact Details
+    Srvroutine Name(SetPersonalDetails) Session(*REQUIRED)
+    
+    * Inbound
+    Field_Map For(*INPUT) Field(#xContactIdentification) Parameter_Name(ContactID)
+    Field_Map For(*INPUT) Field(#xContactTitle) Parameter_Name(ToTitle)
+    Field_Map For(*INPUT) Field(#xContactFirstName) Parameter_Name(ToFirstName)
+    Field_Map For(*INPUT) Field(#xContactLastName) Parameter_Name(ToLastName)
+    Field_Map For(*INPUT) Field(#xContactGender) Parameter_Name(ToGender)
+    Field_Map For(*INPUT) Field(#xContactBirthdate) Parameter_Name(ToBirthDate)
+    Field_Map For(*INPUT) Field(#xContactEmailAddress) Parameter_Name(ToEmailAddress)
+    
+    * Inbound Request Check Values
+    Group_Map For(*INPUT) Group(#ValidRequestGroup)
+    
+    * Return Status
+    Field_Map For(*OUTPUT) Field(#BPFStatus) Parameter_Name(Status)
+    
+    * Assume failure
+    #BPFStatus := "ER"
+    
+    * Update Contact Details
+    Update Fields(#xContactFirstName #xContactLastName #xContactGender #xContactBirthdate #xContactEmailAddress) In_File(xContacts) With_Key(#xContactIdentification)
+    
+    If_Status Is(*OKAY)
+    
+    * Send a happy return code
+    #BPFStatus := "OK"
+    
+    * All Changed, so notify
+    #Utils.Log( ('User Account Data Server : contact personal details change : successful') )
+    #SessionTracker.LogEvent( #TrackingID CONTACT.CHANGE.PERSONAL.SUCCESS True )
+    Endif
+    
+    Endroutine
+    
+    Srvroutine Name(SetAddressDetails) Session(*REQUIRED)
+    
+    * Inbound
+    Field_Map For(*INPUT) Field(#xContactIdentification) Parameter_Name(ContactID)
+    Field_Map For(*INPUT) Field(#xContactAddress) Parameter_Name(ToAddress)
+    Field_Map For(*INPUT) Field(#xContactHometown) Parameter_Name(ToHomeTown)
+    Field_Map For(*INPUT) Field(#xContactCity) Parameter_Name(ToCity)
+    Field_Map For(*INPUT) Field(#xContactHomePhone) Parameter_Name(ToHomePhone)
+    Field_Map For(*INPUT) Field(#xContactMobilePhone) Parameter_Name(ToMobilePhone)
+    Field_Map For(*INPUT) Field(#xContactFaxNumber) Parameter_Name(ToFaxNumber)
+    
+    * Inbound Request Check Values
+    Group_Map For(*INPUT) Group(#ValidRequestGroup)
+    
+    * Return Status
+    Field_Map For(*OUTPUT) Field(#BPFStatus) Parameter_Name(Status)
+    
+    * Assume failure
+    #BPFStatus := "ER"
+    
+    * Update Contact Details
+    Update Fields(#xContactAddress #xContactHometown #xContactCity #xContactHomePhone #xContactMobilePhone #xContactFaxNumber) In_File(xContacts) With_Key(#xContactIdentification)
+     
+    If_Status Is(*OKAY)
+    
+    * Send a happy return code
+    #BPFStatus := "OK"
+    
+    * All Changed, so notify
+    #Utils.Log( ('User Account Data Server : contact address details change : successful') )
+    #SessionTracker.LogEvent( #TrackingID CONTACT.CHANGE.ADDRESS.SUCCESS True )
+    Endif
+    
+    Endroutine
+    End_Com
+    

@@ -1,0 +1,327 @@
+﻿Web View:
+  Name:               JMICustomerContactView
+  Enabled For RDMLX:  Yes
+
+  Multilingual Details:
+  - ENG:
+      Description:        "Customer Contact View"
+
+  Source: |
+    Begin_Com Role(*EXTENDS #PRIM_VIEW) Displayposition(1) Tabposition(1) Height(1233) Width(1700) Verticalscroll(True) Layoutmanager(#MainDesktopLayout)
+    
+    * Reference Application Objects
+    Define_Com Class(#BPFSessionManager) Name(#Session) Scope(*APPLICATION)
+    Define_Com Class(#BPFNavigationManager) Name(#Navigate) Scope(*APPLICATION)
+    Define_Com Class(#BPFDataClientManager) Name(#Data) Scope(*APPLICATION)
+    
+    * Language Support
+    Define_Com Class(#JMICustomerContactViewStrings) Name(#Strings)
+    
+    * JMI Data object
+    Define_Com Class(#JMICustomerContactClass) Name(#CurrentContact) Reference(*DYNAMIC)
+    
+    Define_Com Class(#JMICustomerContactsDataClient) Name(#CustContacts) Scope(*APPLICATION)
+    
+    * Panel Styles
+    Define_Com Class(#PRIM_VS.Style) Name(#RoundedCornerStyle) Cornerbottomleft(8) Cornerbottomright(8) Cornertopleft(8) Cornertopright(8) Borderleft(1) Bordertop(1) Borderright(1) Borderbottom(1)
+    Define_Com Class(#PRIM_VS.Style) Name(#NavigationLinkStyle) Cursor(Hand)
+    
+    * Main Panel Layouts
+    
+    * Desktop Layout Manager
+    Define_Com Class(#PRIM_TBLO) Name(#MainDesktopLayout) Margintop(24) Sizing(ContentHeight)
+    
+    * Rows and Columns
+    Define_Com Class(#PRIM_TBLO.Column) Name(#MainDesktopLayoutColumn1) Displayposition(1) Parent(#MainDesktopLayout) Minwidth(8)
+    Define_Com Class(#PRIM_TBLO.Column) Name(#MainDesktopLayoutColumn2) Displayposition(2) Parent(#MainDesktopLayout) Width(44) Minwidth(140) Maxwidth(420)
+    Define_Com Class(#PRIM_TBLO.Column) Name(#MainDesktopLayoutColumn4) Displayposition(3) Parent(#MainDesktopLayout) Width(44) Minwidth(140) Maxwidth(420)
+    Define_Com Class(#PRIM_TBLO.Column) Name(#MainDesktopLayoutColumn5) Displayposition(4) Parent(#MainDesktopLayout) Minwidth(8)
+    Define_Com Class(#PRIM_TBLO.Row) Name(#MainDesktopLayoutRow1) Displayposition(1) Parent(#MainDesktopLayout) Height(220) Units(Content)
+    Define_Com Class(#PRIM_TBLO.Row) Name(#MainDesktopLayoutRow3) Displayposition(2) Parent(#MainDesktopLayout) Height(869) Units(Content)
+    Define_Com Class(#PRIM_TBLO.Row) Name(#MainDesktopLayoutRow6) Displayposition(3) Parent(#MainDesktopLayout) Units(Pixels) Height(120)
+    
+    * Main Desktop Layout Items
+    Define_Com Class(#PRIM_TBLO.Item) Name(#MainDesktopLayoutItem1) Alignment(TopCenter) Column(#MainDesktopLayoutColumn2) Manage(#Avatar) Parent(#MainDesktopLayout) Row(#MainDesktopLayoutRow1) Sizing(ContentWidthAndHeight) Columnspan(2) Flow(Down)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#MainDesktopLayoutItem2) Column(#MainDesktopLayoutColumn2) Manage(#PanelTitle) Parent(#MainDesktopLayout) Row(#MainDesktopLayoutRow1) Sizing(ContentHeightFitToWidth) Columnspan(2) Flow(Down) Alignment(TopCenter) Margintop(17) Marginleft(24) Marginright(24)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#MainDesktopLayoutItem3) Alignment(TopCenter) Column(#MainDesktopLayoutColumn2) Manage(#PanelExplanation) Parent(#MainDesktopLayout) Row(#MainDesktopLayoutRow1) Sizing(ContentHeightFitToWidth) Columnspan(2) Marginleft(24) Marginright(24) Flow(Down) Margintop(29)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#MainDesktopLayoutItem8) Column(#MainDesktopLayoutColumn2) Manage(#FooterText) Parent(#MainDesktopLayout) Sizing(ContentHeightFitToWidth) Columnspan(2) Alignment(TopCenter) Row(#MainDesktopLayoutRow6) Marginleft(24) Marginright(24) Margintop(24)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#MainDesktopLayoutItem5) Alignment(TopLeft) Column(#MainDesktopLayoutColumn2) Manage(#PanelNavigationIcon) Parent(#MainDesktopLayout) Row(#MainDesktopLayoutRow1) Sizing(None)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#MainDesktopLayoutItem4) Alignment(TopLeft) Column(#MainDesktopLayoutColumn2) Manage(#ContactCard) Parent(#MainDesktopLayout) Row(#MainDesktopLayoutRow3) Sizing(None) Flow(Down) Margintop(24) Columnspan(3)
+    
+    Define_Com Class(#PRIM_TBLO.Item) Name(#MainDesktopLayoutItem6) Alignment(TopLeft) Column(#MainDesktopLayoutColumn2) Manage(#AddressCard) Parent(#MainDesktopLayout) Row(#MainDesktopLayoutRow3) Sizing(None) Flow(Down) Margintop(24) Columnspan(2)
+    
+    * Personal Details Card Layout Manager
+    Define_Com Class(#PRIM_TBLO) Name(#contactCardLayout)
+    * Rows and Columns
+    Define_Com Class(#PRIM_TBLO.Column) Name(#contactCardLayoutColumnLeft) Displayposition(1) Parent(#contactCardLayout) Minwidth(24) Units(Pixels) Width(24)
+    Define_Com Class(#PRIM_TBLO.Column) Name(#contactCardLayoutColumn2) Displayposition(2) Parent(#contactCardLayout) Width(0.7)
+    Define_Com Class(#PRIM_TBLO.Column) Name(#contactCardLayoutColumnRight) Displayposition(4) Parent(#contactCardLayout) Minwidth(24) Units(Pixels) Width(24)
+    Define_Com Class(#PRIM_TBLO.Column) Name(#contactCardLayoutColumn1) Displayposition(3) Parent(#contactCardLayout) Width(1.3)
+    
+    Define_Com Class(#PRIM_TBLO.Row) Name(#contactCardLayoutLayoutRow1) Displayposition(1) Parent(#contactCardLayout) Height(76) Units(Content)
+    Define_Com Class(#PRIM_TBLO.Row) Name(#contactCardLayoutLayoutRow2) Displayposition(2) Parent(#contactCardLayout) Units(Pixels) Height(16)
+    Define_Com Class(#PRIM_TBLO.Row) Name(#contactCardLayoutLayoutRow3) Displayposition(3) Parent(#contactCardLayout) Height(276) Units(Content)
+    
+    * Personal Details Card Layout Items
+    Define_Com Class(#PRIM_TBLO.Row) Name(#contactCardLayoutRow1) Displayposition(4) Parent(#contactCardLayout) Height(56) Units(Content)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#contactCardLayoutItem1) Alignment(TopLeft) Column(#contactCardLayoutColumn2) Manage(#PersonalDetailsCardHeading) Parent(#contactCardLayout) Row(#contactCardLayoutLayoutRow1) Sizing(ContentHeightFitToWidth) Flow(Down) Margintop(24) Columnspan(2)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#contactCardLayoutItem2) Alignment(TopLeft) Column(#contactCardLayoutColumn2) Manage(#contactCardText) Parent(#contactCardLayout) Row(#contactCardLayoutLayoutRow1) Sizing(ContentHeightFitToWidth) Flow(Down) Margintop(4) Marginbottom(4) Columnspan(2)
+    
+    * Personal Details Card Layout
+    Define_Com Class(#PRIM_TBLO.Item) Name(#contactCardLayoutItem4) Alignment(TopCenter) Column(#contactCardLayoutColumn2) Flow(Down) Manage(#ContactCardLabel01) Parent(#contactCardLayout) Row(#contactCardLayoutLayoutRow3) Sizing(FitToWidth) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#contactCardLayoutItem5) Alignment(TopCenter) Column(#contactCardLayoutColumn2) Flow(Down) Manage(#ContactCardLabel02) Parent(#contactCardLayout) Row(#contactCardLayoutLayoutRow3) Sizing(FitToWidth) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#contactCardLayoutItem6) Alignment(TopCenter) Column(#contactCardLayoutColumn2) Flow(Down) Manage(#ContactCardLabel03) Parent(#contactCardLayout) Row(#contactCardLayoutLayoutRow3) Sizing(FitToWidth) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#contactCardLayoutItem7) Alignment(TopCenter) Column(#contactCardLayoutColumn2) Flow(Down) Manage(#ContactCardLabel04) Parent(#contactCardLayout) Row(#contactCardLayoutLayoutRow3) Sizing(FitToWidth) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#contactCardLayoutItem8) Alignment(TopCenter) Column(#contactCardLayoutColumn2) Flow(Down) Manage(#ContactCardLabel05) Parent(#contactCardLayout) Row(#contactCardLayoutLayoutRow3) Sizing(FitToWidth) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#contactCardLayoutItem9) Alignment(TopCenter) Column(#contactCardLayoutColumn2) Flow(Down) Manage(#ContactCardLabel06) Parent(#contactCardLayout) Row(#contactCardLayoutLayoutRow3) Sizing(FitToWidth) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#contactCardLayoutItem10) Alignment(TopCenter) Column(#contactCardLayoutColumn1) Flow(Down) Manage(#ContactCardValue05) Parent(#contactCardLayout) Row(#contactCardLayoutLayoutRow3) Sizing(FitToWidth) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#contactCardLayoutItem11) Alignment(TopCenter) Column(#contactCardLayoutColumn1) Flow(Down) Manage(#ContactCardValue01) Parent(#contactCardLayout) Row(#contactCardLayoutLayoutRow3) Sizing(FitToWidth) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#contactCardLayoutItem12) Alignment(TopCenter) Column(#contactCardLayoutColumn1) Flow(Down) Manage(#ContactCardValue02) Parent(#contactCardLayout) Row(#contactCardLayoutLayoutRow3) Sizing(FitToWidth) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#contactCardLayoutItem13) Alignment(TopCenter) Column(#contactCardLayoutColumn1) Flow(Down) Manage(#ContactCardValue06) Parent(#contactCardLayout) Row(#contactCardLayoutLayoutRow3) Sizing(FitToWidth) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#contactCardLayoutItem14) Alignment(TopCenter) Column(#contactCardLayoutColumn1) Flow(Down) Manage(#ContactCardValue03) Parent(#contactCardLayout) Row(#contactCardLayoutLayoutRow3) Sizing(FitToWidth) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#contactCardLayoutItem15) Alignment(TopCenter) Column(#contactCardLayoutColumn1) Flow(Down) Manage(#ContactCardValue04) Parent(#contactCardLayout) Row(#contactCardLayoutLayoutRow3) Sizing(FitToWidth) Margintop(10)
+    
+    * Address Card Layout Items
+    Define_Com Class(#PRIM_TBLO.Item) Name(#contactCardLayoutItem3) Manage(#contactCardAction) Parent(#contactCardLayout) Row(#contactCardLayoutRow1) Sizing(None) Column(#contactCardLayoutColumn2) Columnspan(3)
+    
+    Define_Com Class(#PRIM_TBLO) Name(#AddressCardLayout) Sizing(ContentHeight) Margintop(10)
+    
+    * Rows and Columns
+    Define_Com Class(#PRIM_TBLO.Column) Name(#AddressCardLayoutColumnLeft) Displayposition(1) Parent(#AddressCardLayout) Minwidth(24)
+    Define_Com Class(#PRIM_TBLO.Column) Name(#AddressCardLayoutColumn2) Displayposition(2) Parent(#AddressCardLayout) Width(18.78)
+    Define_Com Class(#PRIM_TBLO.Column) Name(#AddressCardLayoutColumnRight) Displayposition(4) Parent(#AddressCardLayout) Minwidth(24)
+    Define_Com Class(#PRIM_TBLO.Column) Name(#AddressCardLayoutColumn1) Displayposition(3) Parent(#AddressCardLayout) Units(Pixels) Width(512)
+    Define_Com Class(#PRIM_TBLO.Row) Name(#AddressCardLayoutLayoutRow1) Displayposition(1) Parent(#AddressCardLayout) Height(76) Units(Content)
+    Define_Com Class(#PRIM_TBLO.Row) Name(#AddressCardLayoutLayoutRow2) Displayposition(2) Parent(#AddressCardLayout) Height(276) Units(Content)
+    Define_Com Class(#PRIM_TBLO.Row) Name(#AddressCardLayoutLayoutRow3) Displayposition(3) Parent(#AddressCardLayout) Height(16) Units(Pixels)
+    
+    * Layout Items
+    Define_Com Class(#PRIM_TBLO.Item) Name(#AddressCardLayoutItem1) Alignment(TopLeft) Column(#AddressCardLayoutColumn2) Manage(#AddressCardHeading) Parent(#AddressCardLayout) Row(#AddressCardLayoutLayoutRow1) Sizing(ContentHeightFitToWidth) Flow(Down) Margintop(24) Columnspan(2)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#AddressCardLayoutItem2) Alignment(TopLeft) Column(#AddressCardLayoutColumn2) Manage(#AddressCardText) Parent(#AddressCardLayout) Row(#AddressCardLayoutLayoutRow1) Sizing(ContentHeightFitToWidth) Flow(Down) Margintop(4) Marginbottom(4) Columnspan(2)
+    
+    * Address Card Data Items Layout
+    * Labels
+    Define_Com Class(#PRIM_TBLO.Item) Name(#AddressCardLayoutItem3) Alignment(TopLeft) Column(#AddressCardLayoutColumn2) Manage(#AddressLabel01) Parent(#AddressCardLayout) Row(#AddressCardLayoutLayoutRow2) Sizing(FitToWidth) Flow(Down) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#AddressCardLayoutItem6) Alignment(TopLeft) Column(#AddressCardLayoutColumn2) Manage(#AddressLabel02) Parent(#AddressCardLayout) Row(#AddressCardLayoutLayoutRow2) Sizing(FitToWidth) Flow(Down) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#AddressCardLayoutItem4) Alignment(TopLeft) Column(#AddressCardLayoutColumn2) Manage(#AddressLabel03) Parent(#AddressCardLayout) Row(#AddressCardLayoutLayoutRow2) Sizing(FitToWidth) Flow(Down) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#AddressCardLayoutItem16) Alignment(TopLeft) Column(#AddressCardLayoutColumn2) Manage(#AddressLabel04) Parent(#AddressCardLayout) Row(#AddressCardLayoutLayoutRow2) Sizing(FitToWidth) Flow(Down) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#AddressCardLayoutItem7) Alignment(TopLeft) Column(#AddressCardLayoutColumn2) Manage(#AddressLabel05) Parent(#AddressCardLayout) Row(#AddressCardLayoutLayoutRow2) Sizing(FitToWidth) Flow(Down) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#AddressCardLayoutItem15) Alignment(TopLeft) Column(#AddressCardLayoutColumn2) Flow(Down) Manage(#AddressLabel06) Parent(#AddressCardLayout) Row(#AddressCardLayoutLayoutRow2) Sizing(FitToWidth) Margintop(10)
+    
+    * Value Items
+    Define_Com Class(#PRIM_TBLO.Item) Name(#AddressCardLayoutItem9) Alignment(TopLeft) Column(#AddressCardLayoutColumn1) Manage(#AddressValue01) Parent(#AddressCardLayout) Row(#AddressCardLayoutLayoutRow2) Sizing(FitToWidth) Flow(Down) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#AddressCardLayoutItem11) Alignment(TopLeft) Column(#AddressCardLayoutColumn1) Manage(#AddressValue02) Parent(#AddressCardLayout) Row(#AddressCardLayoutLayoutRow2) Sizing(FitToWidth) Flow(Down) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#AddressCardLayoutItem12) Alignment(TopLeft) Column(#AddressCardLayoutColumn1) Manage(#AddressValue03) Parent(#AddressCardLayout) Row(#AddressCardLayoutLayoutRow2) Sizing(FitToWidth) Flow(Down) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#AddressCardLayoutItem13) Alignment(TopLeft) Column(#AddressCardLayoutColumn1) Manage(#AddressValue04) Parent(#AddressCardLayout) Row(#AddressCardLayoutLayoutRow2) Sizing(FitToWidth) Flow(Down) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#AddressCardLayoutItem14) Alignment(TopLeft) Column(#AddressCardLayoutColumn1) Manage(#AddressValue05) Parent(#AddressCardLayout) Row(#AddressCardLayoutLayoutRow2) Sizing(FitToWidth) Flow(Down) Margintop(10)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#AddressCardLayoutItem17) Alignment(TopLeft) Column(#AddressCardLayoutColumn1) Manage(#AddressValue06) Parent(#AddressCardLayout) Row(#AddressCardLayoutLayoutRow2) Sizing(FitToWidth) Flow(Down)
+    
+    
+    Define_Com Class(#PRIM_TBLO) Name(#contactCardMobileLayoutList)
+    Define_Com Class(#PRIM_TBLO.Column) Name(#contactCardMobileLayoutListColumn1) Displayposition(1) Parent(#contactCardMobileLayoutList)
+    Define_Com Class(#PRIM_TBLO.Row) Name(#contactCardMobileLayoutListRow1) Displayposition(1) Parent(#contactCardMobileLayoutList)
+    
+    
+    
+    
+    Define_Com Class(#PRIM_TBLO) Name(#AddressCardMobileLayoutList)
+    Define_Com Class(#PRIM_TBLO.Column) Name(#AddressCardMobileLayoutListColumn1) Displayposition(1) Parent(#AddressCardMobileLayoutList)
+    Define_Com Class(#PRIM_TBLO.Row) Name(#AddressCardMobileLayoutListRow1) Displayposition(1) Parent(#AddressCardMobileLayoutList)
+    
+    * Controls
+    
+    Define_Com Class(#PRIM_MD.Icon) Name(#PanelNavigationIcon) Displayposition(1) Icon('arrow_back') Left(430) Parent(#COM_OWNER) Tabposition(5) Top(24) Style(#NavigationLinkStyle)
+    
+    Define_Com Class(#PRIM_MD.Icon) Name(#Avatar) Displayposition(2) Height(100) Icon('assignment_ind') Left(800) Parent(#COM_OWNER) Tabposition(1) Themedrawstyle('MediumTitle+Rounded') Top(24) Width(100) Iconheight(80) Iconpadding(10)
+    Define_Com Class(#PRIM_MD.Label) Name(#PanelTitle) Caption('%USER%''s contact Info') Displayposition(3) Left(454) Parent(#COM_OWNER) Tabposition(2) Themedrawstyle('Title') Top(141) Width(792) Captionalignment(Center) Height(47) Wordwrap(True)
+    Define_Com Class(#PRIM_MD.Label) Name(#PanelExplanation) Displayposition(4) Left(454) Parent(#COM_OWNER) Tabposition(3) Themedrawstyle('Heading2+ForegroundTheme') Top(217) Height(27) Width(792) Wordwrap(True) Captionalignment(Center) Caption('Manage your contact and profile information stored in myPortal')
+    
+    * Cards
+    
+    * contact
+    Define_Com Class(#PRIM_PANL) Name(#ContactCard) Displayposition(6) Left(430) Parent(#COM_OWNER) Tabposition(7) Tabstop(False) Top(268) Width(846) Height(441) Themedrawstyle('Card') Style(#RoundedCornerStyle) Layoutmanager(#contactCardLayout)
+    Define_Com Class(#PRIM_MD.Label) Name(#PersonalDetailsCardHeading) Caption('Personal Details') Displayposition(1) Left(24) Parent(#ContactCard) Tabposition(1) Themedrawstyle('Heading2') Top(24) Width(796) Height(27) Wordwrap(True) Icon('edit') Iconalignment(CenterRight) Style(#NavigationLinkStyle) Iconcolor(Theme500)
+    Define_Com Class(#PRIM_MD.Label) Name(#contactCardText) Captionalignment(TopLeft) Displayposition(2) Height(21) Left(24) Parent(#ContactCard) Tabposition(2) Top(55) Width(796) Wordwrap(True) Caption('These are your details we need to know so we can communicate with you')
+    Define_Com Class(#PRIM_MD.FlatButton) Name(#contactCardAction) Caption('Remove your contact') Displayposition(3) Left(24) Parent(#ContactCard) Tabposition(3) Themedrawstyle('ForegroundMediumPrimary+TopDivider') Top(368) Height(56) Captionmarginleft(24) Captionalignment(CenterLeft) Icon('keyboard_arrow_right') Iconalignment(CenterRight) Style(#NavigationLinkStyle) Width(820) Iconmarginright(24)
+    
+    * Profile
+    Define_Com Class(#PRIM_PANL) Name(#AddressCard) Displayposition(7) Left(430) Parent(#COM_OWNER) Tabposition(6) Tabstop(False) Top(733) Width(840) Height(380) Themedrawstyle('Card') Style(#RoundedCornerStyle) Layoutmanager(#AddressCardLayout)
+    Define_Com Class(#PRIM_MD.Label) Name(#AddressCardHeading) Caption('Address') Displayposition(7) Left(24) Parent(#AddressCard) Tabposition(1) Themedrawstyle('Heading2') Top(34) Width(790) Height(27) Wordwrap(True) Icon('edit') Iconalignment(CenterRight) Style(#NavigationLinkStyle) Iconcolor(Theme500)
+    Define_Com Class(#PRIM_MD.Label) Name(#AddressCardText) Captionalignment(TopLeft) Displayposition(8) Height(21) Left(24) Parent(#AddressCard) Tabposition(2) Top(65) Width(790) Wordwrap(True) Caption('These are details about yourself that you may want to share with us')
+    
+    
+    * contact List
+    
+    * Profile List
+    
+    * Footer
+    Define_Com Class(#PRIM_MD.Label) Name(#FooterText) Captionalignment(TopCenter) Displayposition(5) Height(45) Parent(#COM_OWNER) Tabposition(4) Top(1137) Width(792) Wordwrap(True) Caption('Only you can change your details. myPortal is committed to your privacy and security') Paddingbottom(24) Left(454)
+    Define_Com Class(#PRIM_MD.Label) Name(#ContactCardLabel01) Caption('TITLE') Displayposition(4) Left(24) Parent(#ContactCard) Tabposition(4) Top(102) Width(279) Themedrawstyle('Subheading+ForegroundSecondary')
+    Define_Com Class(#PRIM_MD.Label) Name(#ContactCardLabel02) Caption('FIRST NAME') Displayposition(5) Left(24) Parent(#ContactCard) Tabposition(5) Top(148) Width(279) Themedrawstyle('Subheading+ForegroundSecondary')
+    Define_Com Class(#PRIM_MD.Label) Name(#ContactCardLabel03) Caption('LAST NAME') Displayposition(6) Left(24) Parent(#ContactCard) Tabposition(6) Top(194) Width(279) Themedrawstyle('Subheading+ForegroundSecondary')
+    Define_Com Class(#PRIM_MD.Label) Name(#ContactCardLabel04) Caption('GENDER') Displayposition(7) Left(24) Parent(#ContactCard) Tabposition(7) Top(240) Width(279) Themedrawstyle('Subheading+ForegroundSecondary')
+    Define_Com Class(#PRIM_MD.Label) Name(#ContactCardLabel05) Caption('DATE OF BIRTH') Displayposition(8) Left(24) Parent(#ContactCard) Tabposition(8) Top(286) Width(279) Themedrawstyle('Subheading+ForegroundSecondary')
+    Define_Com Class(#PRIM_MD.Label) Name(#ContactCardLabel06) Caption('EMAIL ADDRESS') Displayposition(9) Left(24) Parent(#ContactCard) Tabposition(9) Top(332) Width(279) Themedrawstyle('Subheading+ForegroundSecondary')
+    Define_Com Class(#PRIM_MD.Label) Name(#ContactCardValue01) Caption('Value') Displayposition(10) Left(303) Parent(#ContactCard) Tabposition(10) Top(102) Themedrawstyle('Heading3') Width(517)
+    Define_Com Class(#PRIM_MD.Label) Name(#ContactCardValue02) Caption('Value') Displayposition(11) Left(303) Parent(#ContactCard) Tabposition(11) Top(148) Width(517) Themedrawstyle('Heading3')
+    Define_Com Class(#PRIM_MD.Label) Name(#ContactCardValue03) Caption('Value') Displayposition(12) Left(303) Parent(#ContactCard) Tabposition(12) Top(194) Width(517) Themedrawstyle('Heading3')
+    Define_Com Class(#PRIM_MD.Label) Name(#ContactCardValue04) Caption('Value') Displayposition(13) Left(303) Parent(#ContactCard) Tabposition(13) Top(240) Width(517) Themedrawstyle('Heading3')
+    Define_Com Class(#PRIM_MD.Label) Name(#ContactCardValue05) Caption('Value') Displayposition(14) Left(303) Parent(#ContactCard) Tabposition(14) Top(286) Width(517) Themedrawstyle('Heading3')
+    Define_Com Class(#PRIM_MD.Label) Name(#ContactCardValue06) Caption('Value') Displayposition(15) Left(303) Parent(#ContactCard) Tabposition(15) Top(332) Width(517) Themedrawstyle('Heading3')
+    Define_Com Class(#PRIM_MD.Label) Name(#AddressLabel01) Caption('Address') Displayposition(1) Left(24) Parent(#AddressCard) Tabposition(3) Top(96) Width(278) Themedrawstyle('Subheading+ForegroundSecondary')
+    Define_Com Class(#PRIM_MD.Label) Name(#AddressLabel03) Caption('City') Displayposition(3) Left(24) Parent(#AddressCard) Tabposition(4) Top(188) Width(278) Themedrawstyle('Subheading+ForegroundSecondary')
+    Define_Com Class(#PRIM_MD.Label) Name(#AddressLabel05) Caption('Mobile Phone') Displayposition(5) Left(24) Parent(#AddressCard) Tabposition(5) Top(280) Width(278) Themedrawstyle('Subheading+ForegroundSecondary')
+    Define_Com Class(#PRIM_MD.Label) Name(#AddressLabel06) Caption('Fax Number') Displayposition(6) Left(24) Parent(#AddressCard) Tabposition(6) Top(326) Width(278) Themedrawstyle('Subheading+ForegroundSecondary')
+    Define_Com Class(#PRIM_MD.Label) Name(#AddressValue01) Caption('Value') Displayposition(9) Left(302) Parent(#AddressCard) Tabposition(7) Top(96) Width(512) Themedrawstyle('Heading3')
+    Define_Com Class(#PRIM_MD.Label) Name(#AddressValue02) Caption('Value') Displayposition(10) Left(302) Parent(#AddressCard) Tabposition(8) Top(142) Width(512) Themedrawstyle('Heading3')
+    Define_Com Class(#PRIM_MD.Label) Name(#AddressValue03) Caption('Value') Displayposition(11) Left(302) Parent(#AddressCard) Tabposition(9) Top(188) Width(512) Themedrawstyle('Heading3')
+    Define_Com Class(#PRIM_MD.Label) Name(#AddressValue04) Caption('Value') Displayposition(12) Left(302) Parent(#AddressCard) Tabposition(10) Top(234) Width(512) Themedrawstyle('Heading3')
+    Define_Com Class(#PRIM_MD.Label) Name(#AddressValue05) Caption('Value') Displayposition(13) Left(302) Parent(#AddressCard) Tabposition(11) Top(280) Width(512) Themedrawstyle('Heading3')
+    Define_Com Class(#PRIM_MD.Label) Name(#AddressLabel02) Caption('Home Town') Displayposition(2) Left(24) Parent(#AddressCard) Tabposition(12) Top(142) Themedrawstyle('Subheading+ForegroundSecondary') Width(278)
+    Define_Com Class(#PRIM_MD.Label) Name(#AddressLabel04) Caption('Home Phone') Displayposition(4) Left(24) Parent(#AddressCard) Tabposition(13) Top(234) Width(278) Themedrawstyle('Subheading+ForegroundSecondary')
+    Define_Com Class(#PRIM_MD.Label) Name(#AddressValue06) Caption('Value') Displayposition(14) Left(302) Parent(#AddressCard) Tabposition(14) Top(316) Width(512) Themedrawstyle('Heading3')
+    
+    * Routines
+    
+    * Events
+    
+    * Self
+    
+    Evtroutine Handling(#COM_OWNER.Initialize)
+    * Get Reference to current user
+    
+    #CurrentContact <= #CustContacts.CustContact<#SYS_WEB.URLParameters<"VALUE">.Value.AsNumber>
+    * We load data, so set wait for a user navigation
+    #BPFPortal.ViewsPanel.SetWaitingState( "ON" )
+    
+    * Set Statis Strings
+    #COM_SELF.SetStrings
+    * Heading String
+    #fullname := #CurrentContact.ContactFirstName + ' ' + #CurrentContact.ContactLastName
+    #PanelTitle.Caption := ('&1''s contact Info').Substitute( #Fullname )
+    
+    *
+    #com_self.HandlecontactCardSetup
+    #bpfportal.ViewsPanel.SetWaitingState Tostate("OFF")
+    Endroutine
+    
+    
+    
+    * Webpage
+    Evtroutine Handling(#SYS_WEB.DeviceChanged)
+    
+    * Layout Cards for device
+    
+    * If (#Address *IsNot *Null)
+    *
+    * #COM_SELF.HandlecontactCardSetup
+    * * #COM_SELF.HandleProfileCardSetup
+    *
+    * Endif
+    
+    Endroutine
+    
+    * Panel Navigation
+    Evtroutine Handling(#PanelNavigationIcon.Click)
+    
+    * Back to Settings
+    #SYS_WEB.History.GoBack
+    
+    Endroutine
+    
+    Evtroutine Handling(#PersonalDetailsCardHeading.Click)
+    
+    * To Personal Details Edit View
+    #BPFPortal.ViewsPanel.SetWaitingState( "ON" )
+    #Navigate.To Eventname('CONTACTEDITVIEW') Value(#CurrentContact.ContactID.AsString)
+    
+    Endroutine
+    
+    Evtroutine Handling(#AddressCardHeading.Click)
+    
+    * To Address Edit View
+    #BPFPortal.ViewsPanel.SetWaitingState( "ON" )
+    
+    #Navigate.To Eventname('ADDRESSEDITVIEW') Value(#CurrentContact.ContactID.AsString)
+    
+    Endroutine
+    * ===================
+    * Will be remove contact details
+    Evtroutine Handling(#contactCardAction.Click)
+    
+    #BPFPortal.ViewsPanel.SetWaitingState( "ON" )
+    #Navigate.To Eventname("VERIFYUSERSECURITY") Value("USERSECURITYREMOVECONTACT")
+    
+    Endroutine
+    
+    *
+    * Methods
+    Mthroutine Name(SetStrings) Access(*PRIVATE)
+    
+    #PanelTitle.Caption := #Strings.Text<PANELTITLE.CAPTION>
+    #PanelExplanation.Caption := #Strings.Text<PANELEXPLANATION.CAPTION>
+    * Personal Details Card
+    #PersonalDetailsCardHeading.Caption := #Strings.Text<CONTACTCARDHEADING.CAPTION>
+    #contactCardText.Caption := #Strings.Text<CONTACTCARDTEXT.CAPTION>
+    #contactCardAction.Caption := #Strings.Text<CONTACTCARDACTION.CAPTION>
+    
+    #AddressCardHeading.Caption := #Strings.Text<ADDRESSCARDHEADING.CAPTION>
+    #AddressCardText.Caption := #Strings.Text<ADDRESSCARDTEXT.CAPTION>
+    
+    
+    * Personal Details Data Items labels
+    #ContactCardLabel01.Caption := #Strings.Text<CONTACTCARDLABEL01.CAPTION>
+    #ContactCardLabel02.Caption := #Strings.Text<CONTACTCARDLABEL02.CAPTION>
+    #ContactCardLabel03.Caption := #Strings.Text<CONTACTCARDLABEL03.CAPTION>
+    #ContactCardLabel04.Caption := #Strings.Text<CONTACTCARDLABEL04.CAPTION>
+    #ContactCardLabel05.Caption := #Strings.Text<CONTACTCARDLABEL05.CAPTION>
+    #ContactCardLabel06.Caption := #Strings.Text<CONTACTCARDLABEL06.CAPTION>
+    
+    * Address Card Data Items labels
+    #AddressLabel01.Caption := #Strings.Text<ADDRESSLABEL01.CAPTION>
+    #AddressLabel02.Caption := #Strings.Text<ADDRESSLABEL02.CAPTION>
+    #AddressLabel03.Caption := #Strings.Text<ADDRESSLABEL03.CAPTION>
+    #AddressLabel04.Caption := #Strings.Text<ADDRESSLABEL04.CAPTION>
+    #AddressLabel05.Caption := #Strings.Text<ADDRESSLABEL05.CAPTION>
+    #AddressLabel06.Caption := #Strings.Text<ADDRESSLABEL06.CAPTION>
+    
+    
+    #FooterText.Caption := #Strings.Text<FOOTERTEXT.CAPTION>
+    
+    Endroutine
+    
+    Mthroutine Name(HandlecontactCardSetup) Access(*PRIVATE)
+    
+    * Set Layout Manager
+    * Build based on Device
+    If (#SYS_WEB.Device = Mobile)
+    
+    * #contactCardList.LayoutManager <= #contactCardMobileLayoutList
+    
+    Else
+    #ContactCard.LayoutManager <= #contactCardLayout
+    
+    Endif
+    
+    * Personal Details card
+    #ContactCardValue01.Caption := #CurrentContact.ContactTitle
+    #ContactCardValue02.Caption := #CurrentContact.ContactFirstName
+    #ContactCardValue03.Caption := #CurrentContact.ContactLastName
+    #ContactCardValue04.Caption := #CurrentContact.ContactGender
+    #ContactCardValue05.Caption := #CurrentContact.ContactBirthdate.AsDisplayString( DDsMMsCCYY )
+    #ContactCardValue06.Caption := #CurrentContact.ContactEmailAddress
+    
+    * Address Card
+    #AddressValue01.Caption := #CurrentContact.ContactAddress
+    #AddressValue02.Caption := #CurrentContact.ContactHomeTown
+    #AddressValue03.Caption := #CurrentContact.ContactCity
+    #AddressValue04.Caption := #CurrentContact.ContactHomePhone
+    #AddressValue05.Caption := #CurrentContact.ContactMobilePhone
+    #AddressValue06.Caption := #CurrentContact.ContactFaxNumber
+    
+    
+    Endroutine
+    
+    
+    
+    End_Com

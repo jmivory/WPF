@@ -1,0 +1,57 @@
+﻿Reusable Part:
+  Name:               JMICustomerContactViewStrings
+  Enabled For RDMLX:  Yes
+  Target Platform:    Browser
+
+  Multilingual Details:
+  - ENG:
+      Description:        "Customer Contact View Strings"
+
+  Source: |
+    Function Options(*DIRECT)
+    Begin_Com Role(*EXTENDS #BPFBaseLanguageResource)
+    
+    * Events
+    Evtroutine Handling(#COM_OWNER.CreateInstance)
+    
+    #COM_SELF.SetStrings( #COM_SELF.ComponentClassName )
+    
+    Endroutine
+    
+    * Set Default Strings
+    Mthroutine Name(BuildDefaults) Options(*REDEFINE) Access(*PRIVATE)
+    #STRINGSCOLLECTION<'PANELTITLE.CAPTION'> := "Manage Contact Info."
+    #STRINGSCOLLECTION<'PANELEXPLANATION.CAPTION'> := "View Customer Contact information in JMI Portal."
+    * Personal Details Card
+    #STRINGSCOLLECTION<'CONTACTCARDHEADING.CAPTION'> := "Personal Details"
+    #STRINGSCOLLECTION<'CONTACTCARDTEXT.CAPTION'> := "You are able to make changes to any of this Contact's details."
+    #STRINGSCOLLECTION<'CONTACTCARDACTION.CAPTION'> := "Remove your Contact"
+    
+    * Personal Details Card Items
+    #STRINGSCOLLECTION<'CONTACTCARDLABEL01.CAPTION'> := "TITLE"
+    #STRINGSCOLLECTION<'CONTACTCARDLABEL02.CAPTION'> := "FIRST NAME"
+    #STRINGSCOLLECTION<'CONTACTCARDLABEL03.CAPTION'> := "LASTNAME"
+    #STRINGSCOLLECTION<'CONTACTCARDLABEL04.CAPTION'> := "GENDER"
+    #STRINGSCOLLECTION<'CONTACTCARDLABEL05.CAPTION'> := "DATE OF BIRTH"
+    #STRINGSCOLLECTION<'CONTACTCARDLABEL06.CAPTION'> := "EMAIL ADDRESS"
+    
+    * Address Card Heading
+    #STRINGSCOLLECTION<'ADDRESSCARDHEADING.CAPTION'> := "Address Details"
+    #STRINGSCOLLECTION<'ADDRESSCARDTEXT.CAPTION'> := "View or change the Contact's address details."
+    * Address card items
+    #STRINGSCOLLECTION<'ADDRESSLABEL01.CAPTION'> := "ADDRESS"
+    #STRINGSCOLLECTION<'ADDRESSLABEL02.CAPTION'> := "HOME TOWN"
+    #STRINGSCOLLECTION<'ADDRESSLABEL03.CAPTION'> := "CITY"
+    #STRINGSCOLLECTION<'ADDRESSLABEL04.CAPTION'> := "HOME PHONE"
+    #STRINGSCOLLECTION<'ADDRESSLABEL05.CAPTION'> := "MOBILE PHONE"
+    #STRINGSCOLLECTION<'ADDRESSLABEL06.CAPTION'> := "FAX NUMBER"
+    
+    * Footer
+    #STRINGSCOLLECTION<'FOOTERTEXT.CAPTION'> := "Change contact details with care - other users also depend on them"
+    
+    #STRINGSCOLLECTION<'CURRENTCONTACT.ONGETLASTSESSIONFAILED'> := "Failed to get last session data"
+    #STRINGSCOLLECTION<'USERCONTACTS.ONGETUSERCONTACTFAILED'> := "Failed to contact information"
+    
+    
+    Endroutine
+    End_Com

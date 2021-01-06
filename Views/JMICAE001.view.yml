@@ -1,0 +1,303 @@
+﻿Web View:
+  Name:               JMIContactAddressEditView
+  Enabled For RDMLX:  Yes
+
+  Multilingual Details:
+  - ENG:
+      Description:        "Contact Address Edit View"
+
+  Source: |
+    Begin_Com Role(*EXTENDS #PRIM_VIEW) Displayposition(1) Tabposition(1) Width(1700) Height(800) Layoutmanager(#MainLayout) Verticalscroll(True)
+    
+    * Reference Application Objects
+    Define_Com Class(#BPFSessionManager) Name(#Session) Scope(*APPLICATION)
+    Define_Com Class(#BPFNavigationManager) Name(#Navigate) Scope(*APPLICATION)
+    
+    * References
+    Define_Com Class(#JMICustomerContactClass) Name(#CurrentContact) Reference(*DYNAMIC)
+    Define_Com Class(#BPFUserAccountClass) Name(#CurrentUser) Reference(*DYNAMIC)
+    Define_Com Class(#JMICustomerContactsDataClient) Name(#CustContacts) Scope(*APPLICATION)
+    
+    * Language Support
+    Define_Com Class(#JMIAddressEditViewString) Name(#Strings)
+    
+    * Styles
+    Define_Com Class(#PRIM_VS.Style) Name(#RoundedCornerStyle) Cornerbottomleft(8) Cornerbottomright(8) Cornertopleft(8) Cornertopright(8) Borderleft(1) Bordertop(1) Borderright(1) Borderbottom(1)
+    Define_Com Class(#PRIM_VS.Style) Name(#NavigationLinkStyle) Cursor(Hand)
+    
+    * Main View Layout
+    Define_Com Class(#PRIM_TBLO) Name(#MainLayout) Margintop(24)
+    
+    * Rows and Columns
+    Define_Com Class(#PRIM_TBLO.Column) Name(#LayoutColumn1) Displayposition(1) Parent(#MainLayout) Minwidth(8)
+    Define_Com Class(#PRIM_TBLO.Column) Name(#LayoutColumn2) Displayposition(2) Parent(#MainLayout) Maxwidth(60) Width(60)
+    Define_Com Class(#PRIM_TBLO.Column) Name(#LayoutColumn3) Displayposition(3) Parent(#MainLayout) Width(96) Minwidth(280) Maxwidth(880)
+    Define_Com Class(#PRIM_TBLO.Column) Name(#LayoutColumn4) Displayposition(4) Parent(#MainLayout) Maxwidth(60)
+    Define_Com Class(#PRIM_TBLO.Column) Name(#LayoutColumn5) Displayposition(5) Parent(#MainLayout) Minwidth(8)
+    Define_Com Class(#PRIM_TBLO.Row) Name(#LayoutRow1) Displayposition(1) Parent(#MainLayout) Height(76) Units(Content)
+    
+    * Layout Items
+    Define_Com Class(#PRIM_TBLO.Row) Name(#MainLayoutRow1) Displayposition(2) Parent(#MainLayout) Height(660) Units(Content)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#MainLayoutItem1) Alignment(TopLeft) Column(#LayoutColumn2) Manage(#PanelHeading) Parent(#MainLayout) Row(#LayoutRow1) Sizing(ContentHeightFitToWidth) Flow(Down) Columnspan(3)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#MainLayoutItem2) Alignment(TopLeft) Column(#LayoutColumn2) Manage(#InstructionText) Parent(#MainLayout) Row(#LayoutRow1) Sizing(ContentHeightFitToWidth) Flow(Down) Margintop(24) Columnspan(3)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#MainLayoutItem3) Alignment(TopLeft) Column(#LayoutColumn3) Manage(#ContactDetailsEntryPanel) Parent(#MainLayout) Row(#MainLayoutRow1) Sizing(FitToWidth) Flow(Down) Margintop(24)
+    
+    * Enabled Panel Layout
+    Define_Com Class(#PRIM_TBLO.Item) Name(#MainLayoutItem4) Alignment(TopLeft) Column(#LayoutColumn3) Flow(Down) Manage(#BottomMargin) Parent(#MainLayout) Row(#MainLayoutRow1) Sizing(FitToWidth)
+    * Contact Entry Panel Layout
+    
+    Define_Com Class(#PRIM_TBLO) Name(#ContactEntryPanelLayout) Sizing(ContentHeight)
+    
+    * Rows and Columns
+    Define_Com Class(#PRIM_TBLO.Row) Name(#ContactEntryPanelLayoutRow1) Displayposition(1) Parent(#ContactEntryPanelLayout) Units(Content) Height(554)
+    Define_Com Class(#PRIM_TBLO.Row) Name(#ContactEntryPanelLayoutRow2) Displayposition(2) Parent(#ContactEntryPanelLayout) Units(Pixels) Height(56)
+    Define_Com Class(#PRIM_TBLO.Column) Name(#ContactEntryPanelLayoutColumn1) Displayposition(1) Parent(#ContactEntryPanelLayout) Minwidth(24)
+    Define_Com Class(#PRIM_TBLO.Column) Name(#ContactPanelLayoutColumn2) Displayposition(2) Parent(#ContactEntryPanelLayout) Width(98)
+    Define_Com Class(#PRIM_TBLO.Column) Name(#ContactPanelLayoutColumn3) Displayposition(3) Parent(#ContactEntryPanelLayout) Minwidth(24)
+    
+    * Layout Items
+    Define_Com Class(#PRIM_TBLO.Item) Name(#ContactPanelLayoutItem1) Manage(#ContactAddressPanelHeading) Parent(#ContactEntryPanelLayout) Row(#ContactEntryPanelLayoutRow1) Sizing(ContentHeightFitToWidth) Column(#ContactPanelLayoutColumn2) Alignment(TopLeft) Flow(Down) Margintop(24) Marginbottom(16)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#ContactPanelLayoutItem3) Column(#ContactEntryPanelLayoutColumn1) Manage(#Divider) Parent(#ContactEntryPanelLayout) Sizing(FitToWidth) Row(#ContactEntryPanelLayoutRow2) Alignment(TopLeft) Columnspan(3)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#ContactPanelLayoutItem4) Alignment(CenterRight) Column(#ContactPanelLayoutColumn2) Manage(#SaveAction) Parent(#ContactEntryPanelLayout) Row(#ContactEntryPanelLayoutRow2) Sizing(None)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#ContactPanelLayoutItem5) Alignment(TopLeft) Column(#ContactPanelLayoutColumn2) Manage(#AddressEdit) Parent(#ContactEntryPanelLayout) Row(#ContactEntryPanelLayoutRow1) Sizing(FitToWidth) Flow(Down) Margintop(8)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#ContactPanelLayoutItem11) Alignment(TopLeft) Column(#ContactPanelLayoutColumn2) Manage(#HomeTownEdit) Parent(#ContactEntryPanelLayout) Row(#ContactEntryPanelLayoutRow1) Sizing(FitToWidth) Flow(Down) Margintop(8)
+    
+    * Main Controls
+    Define_Com Class(#PRIM_TBLO.Item) Name(#ContactEntryPanelLayoutItem2) Alignment(TopLeft) Column(#ContactPanelLayoutColumn2) Manage(#CityEdit) Parent(#ContactEntryPanelLayout) Row(#ContactEntryPanelLayoutRow1) Sizing(FitToWidth) Flow(Down) Margintop(8)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#ContactEntryPanelLayoutItem3) Alignment(TopLeft) Column(#ContactPanelLayoutColumn2) Manage(#HomePhoneEdit) Parent(#ContactEntryPanelLayout) Row(#ContactEntryPanelLayoutRow1) Sizing(FitToWidth) Flow(Down) Margintop(8)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#ContactEntryPanelLayoutItem1) Alignment(TopLeft) Column(#ContactPanelLayoutColumn2) Manage(#MobilePhoneEdit) Parent(#ContactEntryPanelLayout) Row(#ContactEntryPanelLayoutRow1) Sizing(FitToWidth) Flow(Down) Margintop(8)
+    Define_Com Class(#PRIM_TBLO.Item) Name(#ContactEntryPanelLayoutItem4) Alignment(TopLeft) Column(#ContactPanelLayoutColumn2) Manage(#FaxNumberEdit) Parent(#ContactEntryPanelLayout) Row(#ContactEntryPanelLayoutRow1) Sizing(FitToWidth) Flow(Down)
+    
+    Define_Com Class(#PRIM_MD.Label) Name(#PanelHeading) Displayposition(1) Left(350) Parent(#COM_OWNER) Tabposition(1) Themedrawstyle('Heading1') Top(24) Width(1000) Icon('arrow_back') Captionmarginleft(24) Height(31) Wordwrap(True) Caption('Edit Account') Style(#NavigationLinkStyle)
+    Define_Com Class(#PRIM_MD.Label) Name(#InstructionText) Captionalignment(TopLeft) Displayposition(2) Height(21) Left(350) Parent(#COM_OWNER) Tabposition(2) Top(79) Width(1000) Wordwrap(True) Caption('Enter the information about you that we will use to communicate with you. You are the only one who is able to change this information.')
+    
+    * Password Entry Panel & Controls
+    Define_Com Class(#PRIM_PANL) Name(#ContactDetailsEntryPanel) Displayposition(3) Height(612) Left(410) Parent(#COM_OWNER) Tabposition(3) Tabstop(False) Top(124) Width(880) Themedrawstyle('Card') Style(#RoundedCornerStyle) Layoutmanager(#ContactEntryPanelLayout)
+    Define_Com Class(#PRIM_MD.Label) Name(#ContactAddressPanelHeading) Caption('Your Address Details') Displayposition(1) Left(24) Parent(#ContactDetailsEntryPanel) Tabposition(1) Themedrawstyle('Heading3') Top(24) Width(830) Wordwrap(True) Height(24)
+    Define_Com Class(#PRIM_MD.Edit) Name(#AddressEdit) Caption('Address') Displayposition(2) Left(24) Parent(#ContactDetailsEntryPanel) Tabposition(2) Top(72) Width(830)
+    Define_Com Class(#PRIM_MD.Edit) Name(#HomeTownEdit) Caption('Home Town') Displayposition(3) Left(24) Parent(#ContactDetailsEntryPanel) Tabposition(4) Top(155) Width(830)
+    Define_Com Class(#PRIM_MD.Edit) Name(#CityEdit) Caption('City') Displayposition(4) Left(24) Parent(#ContactDetailsEntryPanel) Tabposition(5) Top(238) Width(830)
+    Define_Com Class(#PRIM_MD.Edit) Name(#HomePhoneEdit) Caption('Home Phone') Displayposition(6) Left(24) Parent(#ContactDetailsEntryPanel) Tabposition(7) Top(404) Width(830)
+    
+    Define_Com Class(#PRIM_PANL) Name(#Divider) Displayposition(9) Height(1) Left(0) Parent(#ContactDetailsEntryPanel) Tabposition(3) Tabstop(False) Themedrawstyle('TopDivider') Top(554) Width(878)
+    Define_Com Class(#PRIM_MD.FlatButton) Name(#SaveAction) Caption('SAVE') Displayposition(8) Left(754) Parent(#ContactDetailsEntryPanel) Tabposition(6) Themedrawstyle('ForegroundMediumPrimary') Top(564) Style(#NavigationLinkStyle)
+    Define_Com Class(#PRIM_MD.Label) Name(#BottomMargin) Displayposition(4) Left(410) Parent(#COM_OWNER) Tabposition(4) Top(736) Height(24) Width(880)
+    
+    *
+    Define_Com Class(#PRIM_MD.Edit) Name(#MobilePhoneEdit) Caption('Mobile Phone') Displayposition(5) Left(24) Parent(#ContactDetailsEntryPanel) Tabposition(8) Top(321) Width(830)
+    Define_Com Class(#PRIM_MD.Edit) Name(#FaxNumberEdit) Appearance(TextFieldBox) Caption('Fax Number') Displayposition(7) Left(24) Parent(#ContactDetailsEntryPanel) Tabposition(9) Top(479) Width(830)
+    Define_Com Class(#PRIM_LIST) Name(#MessageList) Displayposition(5) Left(58) Parent(#COM_OWNER) Tabposition(5) Top(496)
+    Define_Com Class(#PRIM_LIST.String) Name(#MessageListColumn1) Columnwidth(250) Displayposition(1) Parent(#MessageList) Sortonclick(True) Source(#STD_QSEL)
+    
+    Define_Com Class(#PRIM_BOLN) Name(#ContactInUse)
+    Define_Com Class(#PRIM_TIMR) Name(#ContactCheckDelay) Interval(250) Startup(Manual)
+    
+    
+    
+    * Routines
+    
+    * Events
+    
+    * Self
+    
+    Evtroutine Handling(#COM_OWNER.Initialize)
+    
+    * Get Reference to logging data client
+    #CurrentUser <= #Session.CurrentUser
+    * Get reference to current contact
+    #CurrentContact <= #CustContacts.CustContact<#SYS_WEB.URLParameters<"VALUE">.Value.AsNumber>
+    
+    * Set Strings
+    #COM_SELF.SetStrings
+    
+    #COM_SELF.Populate
+    #BPFPortal.ViewsPanel.SetWaitingState( "OFF" )
+    
+    Endroutine
+    
+    * Navigation
+    Evtroutine Handling(#PanelHeading.Click)
+    
+    #SYS_WEB.History.GoBack
+    
+    Endroutine
+    
+    
+    Evtroutine Handling(#Session.OnCheckAccountFailed)
+    
+    #BPFPortal.ShowToaster( (#Strings.Text<'MESSAGE.ONCHECKACCOUNTFAILED'>) )
+    
+    Endroutine
+    
+    Evtroutine Handling(#CurrentUser.OnSetAccountDetailsCompleted)
+    
+    #SYS_WEB.History.GoBack
+    #BPFPortal.ShowToaster( #Strings.Text<'MESSAGE.ONSETACCOUNTDETAILSCOMPLETED'> )
+    
+    Endroutine
+    
+    Evtroutine Handling(#CurrentUser.OnSetAccountDetailsFailed)
+    
+    #BPFPortal.ViewsPanel.SetWaitingState( "OFF" )
+    #BPFPortal.ShowToaster( #Strings.Text<'MESSAGE.ONSETACCOUNTDETAILSFAILED'> 7500 )
+    
+    Endroutine
+    
+    Evtroutine Handling(#CurrentContact.OnSetAddressDetailsCompleted)
+    #SYS_WEB.History.GoBack
+    #BPFPortal.ShowToaster( #Strings.Text<'MESSAGE.ONSETADDRESSDETAILSCOMPLETED'> )
+    #BPFPortal.ViewsPanel.SetWaitingState( "OFF" )
+    Endroutine
+    
+    Evtroutine Handling(#CurrentContact.OnSetAddressDetailsFailed)
+    Clr_List Named(#MessageList)
+    #STD_QSEL := 'Test entry'
+    Add_Entry To_List(#MessageList)
+    For Each(#message) In(#sys_msgq.Messages)
+    #STD_QSEL := #message.Text
+    Add_Entry To_List(#MessageList)
+    Endfor
+    
+    #BPFPortal.ViewsPanel.SetWaitingState( "OFF" )
+    #BPFPortal.ShowToaster( #Strings.Text<'MESSAGE.ONSETADDRESSDETAILSFAILED'> 7500 )
+    
+    Endroutine
+    
+    * Actions
+    Evtroutine Handling(#SaveAction.Click)
+    If (#COM_SELF.CheckDataIsValid)
+    
+    * Save user account data, pass in values
+    #BPFPortal.ViewsPanel.SetWaitingState( "ON" )
+    #CurrentContact.SetAddressDetails( #AddressEdit #CityEdit #HomeTownEdit #MobilePhoneEdit #FaxNumberEdit #HomePhoneEdit )
+    Endif
+    
+    Endroutine
+    
+    Evtroutine Handling(#CurrentContact.OnSetPersonalDetailsCompleted)
+    #SYS_WEB.History.GoBack
+    #BPFPortal.ShowToaster( #Strings.Text<'MESSAGE.ONSETPERSONALDETAILSCOMPLETED'> )
+    #BPFPortal.ViewsPanel.SetWaitingState( "OFF" )
+    
+    Endroutine
+    
+    Evtroutine Handling(#CurrentContact.OnSetPersonalDetailsFailed)
+    * Clr_List Named(#Messageslist)
+    * #STD_QSEL := 'Test entry'
+    * Add_Entry To_List(#Messageslist)
+    * For Each(#message) In(#sys_msgq.Messages)
+    * #STD_QSEL := #message.Text
+    * Add_Entry To_List(#Messageslist)
+    * Endfor
+    
+    #BPFPortal.ViewsPanel.SetWaitingState( "OFF" )
+    #BPFPortal.ShowToaster( #Strings.Text<'MESSAGE.ONSETPERSONALDETAILSFAILED'> 7500 )
+    
+    Endroutine
+    
+    * If this still needed ????
+    Evtroutine Handling(#ContactCheckDelay.Tick)
+    
+    #ContactCheckDelay.Stop
+    
+    Endroutine
+    
+    * Methods
+    
+    * Set String
+    Mthroutine Name(SetStrings) Access(*PRIVATE)
+    
+    #PanelHeading.Caption := #Strings.Text<PANELHEADING.CAPTION>
+    #InstructionText.Caption := #Strings.Text<INSTRUCTIONTEXT.CAPTION>
+    
+    #ContactAddressPanelHeading.Caption := #Strings.Text<ADDRESSDETAILSPANELHEADING.CAPTION>
+    #AddressEdit.Caption := #Strings.Text<ADDRESSEDIT.CAPTION>
+    #HomeTownEdit.Caption := #Strings.Text<HOMETOWNEDIT.CAPTION>
+    #CityEdit.Caption := #Strings.Text<CITYEDIT.CAPTION>
+    #HomePhoneEdit.Caption := #Strings.Text<HOMEPHONEEDIT.CAPTION>
+    #MobilePhoneEdit.Caption := #Strings.Text<MOBILEPHONEEDIT.CAPTION>
+    #FaxNumberEdit := #Strings.Text<FAXNUMBEREDIT.CAPTION>
+    
+    #SaveAction.Caption := #Strings.Text<SAVEACTION.CAPTION>
+    
+    Endroutine
+    
+    * Populate
+    Mthroutine Name(Populate)
+    
+    * Populate Fields
+    #AddressEdit := #CurrentContact.ContactAddress
+    #HomeTownEdit := #CurrentContact.ContactHomeTown
+    #CityEdit := #CurrentContact.ContactCity
+    #HomePhoneEdit := #CurrentContact.ContactHomePhone
+    #MobilePhoneEdit := #CurrentContact.ContactMobilePhone
+    #FaxNumberEdit := #CurrentContact.ContactFaxNumber
+    
+    Endroutine
+    
+    
+    * Check if data is valid
+    Mthroutine Name(CheckDataIsValid)
+    Define_Map For(*RESULT) Class(#PRIM_BOLN) Name(#Result)
+    
+    * Assume Success
+    #Result := True
+    #Com_self.ClearAllErrors
+    
+    * Check for First name
+    If (#AddressEdit.Value.IsNull)
+    
+    #AddressEdit.ShowError( #Strings.Text<'ADDRESSEDIT.ERROR'> )
+    
+    Endif
+    
+    * Check for Home Town
+    If (#HomeTownEdit.Value.IsNull)
+    
+    #HomeTownEdit.ShowError( #Strings.Text<'HOMETOWNEDIT.ERROR'> )
+    
+    Endif
+    
+    * Check city for blank in use
+    If (#CityEdit.Value.IsNull)
+    
+    #CityEdit.ShowError( #Strings.Text<'CITYEDIT.ERROR'> )
+    
+    Endif
+    
+    If (#MobilePhoneEdit.Value.IsNull)
+    
+    #MobilePhoneEdit.ShowError( #Strings.Text<MOBILEPHONEEDIT.ERROR> )
+    
+    Endif
+    
+    * Check if we have any errors
+    For Each(#control) In(#ContactDetailsEntryPanel.ComponentControls) Operation(*INSTANCE_OF #PRIM_MD.Edit)
+    
+    If (#control.HasError)
+    
+    #Result := False
+    Return
+    
+    Endif
+    
+    Endfor
+    
+    Endroutine
+    
+    Mthroutine Name(ClearAllErrors) Access(*PRIVATE)
+    
+    * Check if we have any errors
+    For Each(#Control) In(#ContactDetailsEntryPanel.ComponentControls) Operation(*INSTANCE_OF #PRIM_MD.Edit)
+    
+    If (#Control.HasError)
+    
+    #Control.ClearError
+    
+    Endif
+    
+    Endfor
+    
+    Endroutine
+    
+    End_Com

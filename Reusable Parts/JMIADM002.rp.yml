@@ -1,0 +1,41 @@
+﻿Reusable Part:
+  Name:               JMIAdministrationViewStrings
+  Enabled For RDMLX:  Yes
+  Target Platform:    Browser
+
+  Multilingual Details:
+  - ENG:
+      Description:        "Administration View Strings"
+
+  Source: |
+    Function Options(*DIRECT)
+    Begin_Com Role(*EXTENDS #BPFBaseLanguageResource)
+    
+    * Events
+    Evtroutine Handling(#COM_OWNER.CreateInstance)
+    
+    #COM_SELF.SetStrings( #COM_SELF.ComponentClassName )
+    
+    Endroutine
+    
+    * Set Default Strings
+    Mthroutine Name(BuildDefaults) Options(*REDEFINE) Access(*PRIVATE)
+    
+    #STRINGSCOLLECTION<'PANELTITLE.CAPTION'> := "Customer Administration Panel"
+    #STRINGSCOLLECTION<'PANELEXPLANATION.CAPTION'> := "Any user can change customer contact details or customer location details"
+    
+    #STRINGSCOLLECTION<'CUSTOMERCONTACTSCARD.HEADING'> := "Customer Contacts"
+    #STRINGSCOLLECTION<'CUSTOMERCONTACTSCARD.TEXT'> := "Manage the customer contacts for the new application. View or change customer contact details."
+    #STRINGSCOLLECTION<'CUSTOMERCONTACTSCARD.ACTION'> := "Manage customer contacts"
+    #STRINGSCOLLECTION<'CUSTOMERMENUITEM.CAPTION'> := "Customer Administration"
+    
+    #STRINGSCOLLECTION<'CUSTOMERLOCATIONCARD.HEADING'> := "Customer Locations"
+    #STRINGSCOLLECTION<'CUSTOMERLOCATIONCARD.TEXT'> := "View and change customer locations for the new application."
+    #STRINGSCOLLECTION<'CUSTOMERLOCATIONCARD.ACTION'> := "Manage customer locations"
+    *
+    
+    #STRINGSCOLLECTION<'FOOTERTEXT.CAPTION'> := "Take care with any changes you make, which may affect other application users."
+    
+    Endroutine
+    
+    End_Com
